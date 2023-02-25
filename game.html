@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aim Training | Valorant</title>
+    <link rel="icon" href="./media/logo.ico">
+
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Khula&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Explora&family=Roboto:wght@500&display=swap');
+            @import url('https://fonts.cdnfonts.com/css/valorant');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: #fff;
+  font-family: 'VALORANT','Roboto', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  text-align: center;
+  cursor: crosshair;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ff4654;
+}
+
+.start {
+  font-size: 1.5rem;
+}
+
+h1 {
+  line-height: 1.4;
+  font-size: 5rem;
+  color: #ff4654;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  transition: margin 0.5s ease-out;
+  background: linear-gradient(90deg, #101823 0%, #101823 100%);
+}
+
+.screen.up {
+  margin-top: -100vh;
+}
+
+.time-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.time-list li {
+  margin: 10px;
+}
+
+.time-btn {
+  background-color: transparent;
+  border: 2px solid #C0C0C0;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  padding: .5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.time-btn:hover {
+  border: 2px solid #ff4654;
+  color: #ff4654;
+}
+
+.hide {
+  opacity: 0;
+}
+
+.primary {
+  color: #ff4654;
+}
+
+.board {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border-radius: 0px;
+  overflow: hidden;
+}
+
+.circle {
+  background: linear-gradient(90deg, #16D9E3 0%, #30C7EC 47%, #46AEF7 100%);
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+}
+        </style>
+
+  </head>
+  <body>
+
+    
+
+    
+
+    <div class="screen">
+      <h1>Aim Training</h1>
+      <a href="#" class="start" id="start">start</a>
+    </div>
+
+    <div class="screen">
+      <h1>Time List</h1>
+      <ul class="time-list" id="timelist">
+        <li>
+          <button class="time-btn" data-time="10">
+            10 sec
+          </button>
+        </li>
+        <li>
+          <button class="time-btn" data-time="20">
+            20 sec
+          </button>
+        </li>
+        <li>
+          <button class="time-btn" data-time="30">
+            30 sec
+          </button>
+        </li>
+        <li>
+          <button class="time-btn" data-time="60">
+            60 sec
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="screen">
+      <h3>Time <span id="time">00:00</span></h3>
+      <div class="board" id="board"></div>
+    </div>
+
+        
+
+    <script src="script.js"></script>
+
+        <script>
+            const startBtn = document.querySelector('#start')
+const screens = document.querySelectorAll('.screen')
+const timeList = document.querySelector('#timelist')
+const timeEl = document.querySelector('#time')
+const board = document.querySelector('.board')
+const colors = ['#FFFFFF']
+let time = 0
+let score = 0
+
+startBtn.addEventListener('click', (event) => {
+  event.preventDefault()
+  screens[0].classList.add('up')
+})
+
+timeList.addEventListener('click', event => {
+  if (event.target.classList.contains('time-btn')) {
+    time = parseInt(event.target.getAttribute('data-time'))
+    screens[1].classList.add('up')
+    startGame()
+  }
+})
+
+board.addEventListener('click', event => {
+  if (event.target.classList.contains('circle')) {
+    score++
+    event.target.remove()
+    createRandomCircle()
+    createRandomCircle2()
+  }
+})
+
+function startGame() {
+  setInterval(decreaseTime, 1000)
+  createRandomCircle()
+  createRandomCircle2()
+  setTime(time)
+}
+
+function decreaseTime() {
+  if (time === 0) {
+    finishGame()
+  } else {
+    let current = --time
+    if (current < 10) {
+      current = `0${current}`
+    }
+    setTime(current)
+  }
+}
+
+function setTime(value) {
+  timeEl.innerHTML = `00:${value}`
+
+}
+
+function finishGame() {
+  timeEl.parentNode.classList.add('hide')
+  board.innerHTML = `<h1>Score: <span class="primary">${score}</span></h1>`
+}
+
+function createRandomCircle() {
+  const circle = document.createElement('div')
+  const {width, height} = board.getBoundingClientRect()
+  const size = getRandomNumber(10, 30)
+  const x = getRandomNumber(0, width - size)
+  const y = getRandomNumber(0, height - size)
+  const color = getRandomColor()
+
+  circle.classList.add('circle')
+  circle.style.width = `${size}px`
+  circle.style.height = `${size}px`
+  circle.style.top = `${y}px`
+  circle.style.left = `${x}px`
+  circle.style.background = color
+
+  board.append(circle)
+}
+
+function getRandomNumber(min, max) {
+  return Math.round(Math.random() * (max - min) + min)
+}
+
+function getRandomColor() { 
+  return colors[Math.floor(Math.random() * colors.length)]
+}
+
+
+        </script>
+
+  </body>
+</html>
